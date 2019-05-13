@@ -1,3 +1,9 @@
+
+
+
+
+#ADJUST to Build-A-Blog names and requirements
+
 from flask import Flask, request, redirect, render_template
 from flask_sqlalchemy import SQLAlchemy
 
