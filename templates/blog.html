@@ -4,31 +4,32 @@
 
 <!-- ADJUST TO Build-A-Blog names and requirements -->
 <!-- TIE Templates/Blog.html to Templates/Index.html -->
+<!-- task replaced with post -->
 
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Get It Done!</h1>
+    <h1>Blogsters Blog</h1>
     <form method='post'>
         <label>
-            New Task:
-            <input type="text" name='task' />
+            New Post:
+            <input type="text" name='post' />
         </label>
-        <input type="submit" value='Add Task' />
+        <input type="submit" value='Add Post' />
     </form>
 
     <hr />
 
-    {% if tasks|length == 0 %}
-    <p>No tasks yet</p>
+    {% if posts|length == 0 %}
+    <p>No posts yet</p>
     {% else %}
 
         <ul>
-            {% for task in tasks %}
-            <li>{{task.name}}
+            {% for post in posts %}
+            <li>{{post.name}}
                 <form method="POST" action="/delete-task" style="display:inline-block;">
-                    <input type="hidden" name="task-id" value="{{task.id}}" />
-                    <input type="submit" value="Done!" />
+                    <input type="hidden" name="post-id" value="{{post.id}}" />
+                    <input type="submit" value="posted" />
                 </form>
             </li>
             {% endfor %}
@@ -38,11 +39,11 @@
 
     <hr />
 
-    <h2>Completed</h2>
+    <h2>Blog Listings</h2>
 
     <ul>
-        {% for task in completed_tasks %}
-        <li>{{task.name}}</li>
+        {% for post in completed_task %}
+        <li>{{post.name}}</li>
         {% endfor %}
     </ul>
 
