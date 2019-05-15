@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- TODO - NEEDS TO BE FORMATTED ONE ON TOP OF THE OTHER -->
+
+<h1>Enter post information:</h1>
+<form action="/new_entry" method="post">
+
+        <label for="title_field">Call it something:</label>
+        <input id="title_field" name="title" type="text" value="{{ new_entry_title }}">
+
+        <label for="body_field">Spill the beans:</label>
+        <textarea rows="4" cols="50" id="body_field" name="body" >{{ new_entry_body }}</textarea>
+
+    <input id="submit_button" type="submit" value="Post">
+</form>
+
+{% endblock %}

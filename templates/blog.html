@@ -9,27 +9,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Blogsters Blog</h1>
+    <h1>Blogsters Blogging Blog for Bloggist that Blog</h1>
     <form method='post'>
         <label>
             New Post:
             <input type="text" name='post' />
         </label>
-        <input type="submit" value='Add Post' />
+        <input type="submit" value='Add New Post' />
     </form>
 
     <hr />
 
-    {% if posts|length == 0 %}
+    {% if tasks|length == 0 %}
     <p>No posts yet</p>
     {% else %}
 
         <ul>
-            {% for post in posts %}
-            <li>{{post.name}}
+            {% for task in tasks %}
+            <li>{{task.name}}
                 <form method="POST" action="/delete-task" style="display:inline-block;">
-                    <input type="hidden" name="post-id" value="{{post.id}}" />
-                    <input type="submit" value="posted" />
+                    <input type="hidden" name="task-id" value="{{task.id}}" />
+                    <input type="submit" value="Done!" />
                 </form>
             </li>
             {% endfor %}
@@ -42,8 +42,8 @@
     <h2>Blog Listings</h2>
 
     <ul>
-        {% for post in completed_task %}
-        <li>{{post.name}}</li>
+        {% for task in completed_tasks %}
+        <li>{{task.name}}</li>
         {% endfor %}
     </ul>
 

@@ -1,10 +1,4 @@
-
-
-
-
-#ADJUST to Build-A-Blog names and requirements
-
-from flask import Flask, request, redirect, render_template, session, flash
+from flask import Flask, request, redirect, render_template, flash
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -12,112 +6,80 @@ app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:LaunchCode@localhost:8889/build-a-blog'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
-app.secret_key = 'y337kGcys&zP3B'
+app.secret_key = 'f8wv3w2f>v9j4sEuhcNYydAGMzzZJgkGgyHE9gUqaJcCk^f*^o7fQyBT%XtTvcYM'
 
-
-class Task(db.Model):
-
+#store post
+#TODO - CHANGE TO Blog CLASS - ADJUST ALL LINKED NAMES
+#TODO - Import Blog in python when changed to Blog from Entry
+class Entry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120))
-    completed = db.Column(db.Boolean)
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    title = db.Column(db.String(150))
+    body = db.Column(db.String(750))
 
-    def __init__(self, name, owner):
-        self.name = name
-        self.completed = False
-        self.owner = owner
+    def __init__(self, title, body ):
+        self.title = title
+        self.body = body
 
-
-class User(db.Model):
-
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True)
-    password = db.Column(db.String(120))
-    tasks = db.relationship('Task', backref='owner')
-
-    def __init__(self, email, password):
-        self.email = email
-        self.password = password
-
-@app.before_request
-def require_login():
-    allowed_routes = ['login', 'register']
-    if request.endpoint not in allowed_routes and 'email' not in session:
-        return redirect('/login')
-
-
-@app.route('/login', methods=['POST', 'GET'])
-def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        user = User.query.filter_by(email=email).first()
-        if user and user.password == password:
-            session['email'] = email
-            flash("Logged in")
-            return redirect('/')
+    #validate
+    def is_valid(self):
+        if self.title and self.body:
+            return True
         else:
-            flash('User password incorrect, or user does not exist', 'error')
+            return False
 
-    return render_template('login.html')
-
-
-@app.route('/register', methods=['POST', 'GET'])
-def register():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        verify = request.form['verify']
-
-        # TODO - validate user's data
-
-        existing_user = User.query.filter_by(email=email).first()
-        if not existing_user:
-            new_user = User(email, password)
-            db.session.add(new_user)
-            db.session.commit()
-            session['email'] = email
-            return redirect('/')
-        else:
-            # TODO - user better response messaging
-            return "<h1>Duplicate user</h1>"
-
-    return render_template('register.html')
-
-@app.route('/logout')
-def logout():
-    del session['email']
-    return redirect('/')
-
-
-@app.route('/', methods=['POST', 'GET'])
+#display entry redirect
+@app.route("/")
 def index():
+    return redirect("/blog")
 
-    owner = User.query.filter_by(email=session['email']).first()
+#display entry handler
+@app.route("/blog")
+def display_blog_entries():
+    #display single entry
+#TODO - CHANGE FROM Entry TO Blog
+    entry_id = request.args.get('id')
+#TODO - CHANGE FROM Entry TO Blog
+    if (entry_id):
+#TODO - CHANGE FROM Entry TO Blog
+        entry = Entry.query.get(entry_id)
+#TODO - CHANGE FROM Entry TO Blog
+        return render_template('single_entry.html', title="Blog Entry", entry=entry)
 
+    #sort all entries
+#TODO - REMOVE EXCESS
+    sort = request.args.get('sort')
+    if (sort=="newest"):
+        all_entries = Entry.query.order_by(Entry.created.desc()).all()
+    else:
+#TODO - CHANGE FROM Entry TO Blog
+        all_entries = Entry.query.all()   
+    return render_template('all_entries.html', title="All Entries", all_entries=all_entries)
+
+#new entry
+@app.route('/new_entry', methods=['GET', 'POST'])
+def new_entry():
     if request.method == 'POST':
-        task_name = request.form['post']
-        new_task = Task(task_name, owner)
-        db.session.add(new_task)
-        db.session.commit()
+        new_entry_title = request.form['title']
+        new_entry_body = request.form['body']
+        new_entry = Entry(new_entry_title, new_entry_body)
 
-    tasks = Task.query.filter_by(completed=False,owner=owner).all()
-    completed_tasks = Task.query.filter_by(completed=True,owner=owner).all()
-    return render_template('blog.html',title="Get It Done!", 
-        tasks=tasks, completed_tasks=completed_tasks)
+        if new_entry.is_valid():
+            db.session.add(new_entry)
+            db.session.commit()
 
-
-@app.route('/delete-task', methods=['POST'])
-def delete_task():
-
-    task_id = int(request.form['post-id'])
-    task = Task.query.get(task_id)
-    task.completed = True
-    db.session.add(task)
-    db.session.commit()
-
-    return redirect('/')
-
+            # display recent blog entry
+            url = "/blog?id=" + str(new_entry.id)
+            return redirect(url)
+#TODO - NEED TO FIX LOCATION OF ERRORS - USE USER-SIGNUP AS MODEL
+        else:
+            flash("Please check entry for errors. A title and body are required.")
+            return render_template('new_entry_form.html',
+                title="Create new blog entry",
+                new_entry_title=new_entry_title,
+                new_entry_body=new_entry_body)
+    #new entry form
+    else:
+        return render_template('new_entry_form.html', title="Create new blog entry")
 
 if __name__ == '__main__':
     app.run()
