@@ -14,13 +14,21 @@ class Blog(db.Model):
     title = db.Column(db.String(150))
     body = db.Column(db.String(750))
 
-    def __init__(self, title, body ):
+    def __init__(self, title, body, title_error, body_error ):
         self.title = title
         self.body = body
+        self.title_error = title_error
+        self.body_error = body_error
 
     #validate
-    def is_valid(self):
-        if self.title and self.body:
+    def title_valid(self):
+        if self.title:
+            return True
+        else:
+            return False
+
+    def body_valid(self):
+        if self.body:
             return True
         else:
             return False
@@ -48,23 +56,32 @@ def display_blog_entries():
 def new_entry():
     if request.method == 'POST':
         new_entry_title = request.form['title']
+        title_error = "Title must be typed here"
+        body_error = "Beans must be spilled here"
         new_entry_body = request.form['body']
-        new_entry = Blog(new_entry_title, new_entry_body)
+        new_entry = Blog(new_entry_title, new_entry_body, title_error, body_error)
 
-        if new_entry.is_valid():
-            db.session.add(new_entry)
-            db.session.commit()
-
-            # display recent blog entry
-            url = "/blog?id=" + str(new_entry.id)
-            return redirect(url)
-#TODO - NEED TO FIX LOCATION OF ERRORS - USE USER-SIGNUP AS MODEL
-        else:
-            flash("Check entry for errors. Title and body are required.")
+        if not new_entry.title_valid():
             return render_template('new_entry_form.html',
                 title="Create new blog entry",
                 new_entry_title=new_entry_title,
-                new_entry_body=new_entry_body)
+                new_entry_body=new_entry_body,
+                title_error=title_error)
+
+        if not new_entry.body_valid():
+            return render_template('new_entry_form.html',
+                title="Create new blog entry",
+                new_entry_title=new_entry_title,
+                new_entry_body=new_entry_body,
+                body_error=body_error)
+
+        if new_entry.body_valid() and new_entry.title_valid():
+                db.session.add(new_entry)
+                db.session.commit()
+
+                # display recent blog entry
+                url = "/blog?id=" + str(new_entry.id)
+                return redirect(url)
     #new entry form
     else:
         return render_template('new_entry_form.html', title="Create new blog entry")
