@@ -4,16 +4,22 @@
 
 <!-- TODO - NEEDS TO BE FORMATTED ONE ON TOP OF THE OTHER -->
 
-<h1>Enter post information:</h1>
+<h1>Create New Post:</h1>
 <form action="/new_entry" method="post">
 
-        <label for="title_field">Call it something:</label>
+    <label for="title_field">Call it something:</label>
+        <br>
         <input id="title_field" name="title" type="text" value="{{ new_entry_title }}">
-
-        <label for="body_field">Spill the beans:</label>
-        <textarea rows="4" cols="50" id="body_field" name="body" >{{ new_entry_body }}</textarea>
-
-    <input id="submit_button" type="submit" value="Post">
+        <br>
+        <br>
+        <br>
+    <label for="body_field">Spill the beans here:</label>
+        <br>
+    <textarea rows="4" cols="50" id="body_field" name="body" >{{ new_entry_body }}</textarea>
+        <br>
+        <br>
+        <br>
+    <input id="submit_button" type="submit" value="Opinionate Others">
 </form>
 
 {% endblock %}

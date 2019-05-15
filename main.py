@@ -72,7 +72,7 @@ def new_entry():
             return redirect(url)
 #TODO - NEED TO FIX LOCATION OF ERRORS - USE USER-SIGNUP AS MODEL
         else:
-            flash("Please check entry for errors. A title and body are required.")
+            flash("Check entry for errors. A title and body are required.")
             return render_template('new_entry_form.html',
                 title="Create new blog entry",
                 new_entry_title=new_entry_title,
