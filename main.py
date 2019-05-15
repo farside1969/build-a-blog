@@ -9,9 +9,7 @@ db = SQLAlchemy(app)
 app.secret_key = 'f8wv3w2f>v9j4sEuhcNYydAGMzzZJgkGgyHE9gUqaJcCk^f*^o7fQyBT%XtTvcYM'
 
 #store post
-#TODO - CHANGE TO Blog CLASS - ADJUST ALL LINKED NAMES
-#TODO - Import Blog in python when changed to Blog from Entry
-class Entry(db.Model):
+class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150))
     body = db.Column(db.String(750))
@@ -36,23 +34,13 @@ def index():
 @app.route("/blog")
 def display_blog_entries():
     #display single entry
-#TODO - CHANGE FROM Entry TO Blog
     entry_id = request.args.get('id')
-#TODO - CHANGE FROM Entry TO Blog
     if (entry_id):
-#TODO - CHANGE FROM Entry TO Blog
-        entry = Entry.query.get(entry_id)
-#TODO - CHANGE FROM Entry TO Blog
+        entry = Blog.query.get(entry_id)
         return render_template('single_entry.html', title="Blog Entry", entry=entry)
 
-    #sort all entries
-#TODO - REMOVE EXCESS
-    sort = request.args.get('sort')
-    if (sort=="newest"):
-        all_entries = Entry.query.order_by(Entry.created.desc()).all()
     else:
-#TODO - CHANGE FROM Entry TO Blog
-        all_entries = Entry.query.all()   
+        all_entries = Blog.query.all()   
     return render_template('all_entries.html', title="All Entries", all_entries=all_entries)
 
 #new entry
@@ -61,7 +49,7 @@ def new_entry():
     if request.method == 'POST':
         new_entry_title = request.form['title']
         new_entry_body = request.form['body']
-        new_entry = Entry(new_entry_title, new_entry_body)
+        new_entry = Blog(new_entry_title, new_entry_body)
 
         if new_entry.is_valid():
             db.session.add(new_entry)
@@ -72,7 +60,7 @@ def new_entry():
             return redirect(url)
 #TODO - NEED TO FIX LOCATION OF ERRORS - USE USER-SIGNUP AS MODEL
         else:
-            flash("Check entry for errors. A title and body are required.")
+            flash("Check entry for errors. Title and body are required.")
             return render_template('new_entry_form.html',
                 title="Create new blog entry",
                 new_entry_title=new_entry_title,
